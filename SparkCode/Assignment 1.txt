@@ -1,0 +1,46 @@
+id,description
+1,name:Harshit;Age:22;salary:7500000
+2,org:Amazon;designation:SDE2
+3,name:Akhil;hobby:reading books;city:Gurgaon
+
+id,key,value
+1,name,Harshit
+1,Age,22
+1,salary,7500000
+2,org,Amazon
+2,designation,SDE2
+
+case class details(eid:Int,key:String,value:String);
+sc.textFile("data/empunstructuredDetails.txt").map(x=>x.split(",")).flatMap{
+x=>
+var reta = new scala.collection.mutable.ArrayBuffer[details];
+x(1).split(";").map(z=>reta.append(details(x(0).toInt,z.split(":")(0),z.split(":")(1))))
+reta}.collect.foreach(println)
+
+sc.textFile("data/empunstructuredDetails.txt").map(x=>x.split(",")).flatMap{
+x=>
+var reta = new scala.collection.mutable.ArrayBuffer[details];
+x(1).split(";").map(z=>reta.append(details(x(0).toInt,z.split(":")(0),z.split(":")(1))))
+reta}.collect.foreach(x=>println(x.eid + ", "+x.key+", "+x.value ))
+
+
+var mydf = spark.read.format("csv").option("delimiter",",").load("data/empunstructuredDetails.txt").toDF("id","value") 
+
+mydf.flatMap{x=>
+var reta = new scala.collection.mutable.ArrayBuffer[details];
+x(1).toString.split(";").map(z=>reta.append(details(x(0).toString.toInt,z.split(":")(0).toString,z.split(":")(1).toString)))
+reta}.show
+
+
+--given by Sunil
+var infoDF = spark.read.format("csv").option("delimiter",",").load("data/empunstructuredDetails.txt")
+
+val expDF = infoDF.withColumn("Description", explode(split($"_c1",";")))
+
+
+val finalDF = expDF.withColumn("Key",split(col("Description"),":").getItem(0)).
+     withColumn("Value",split(col("Description"),":").getItem(1)).drop("Description")
+
+.withColumn("id",col("_c0")).drop(col("_c0")).drop(col("_c1")).show
+
+

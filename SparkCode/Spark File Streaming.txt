@@ -1,0 +1,203 @@
+--normal streaming
+
+import org.apache.spark.streaming.Seconds;
+import org.apache.spark.streaming.StreamingContext._;
+import org.apache.spark.streaming.StreamingContext;
+import org.apache.hadoop.io._;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+val ssc = new StreamingContext(sc, Seconds(30));
+
+val inputDirectory = "spark/sparkstreaming/newstream";
+
+val lines = ssc.fileStream[LongWritable, Text, TextInputFormat](inputDirectory);
+
+lines.foreachRDD{rdd=>
+var myrdd = rdd.map(x=>x._2.toString)
+myrdd.collect.foreach(println)
+};
+
+
+ssc.start()
+ssc.awaitTermination()
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--with some action
+
+import org.apache.spark.streaming.Seconds;
+import org.apache.spark.streaming.StreamingContext._;
+import org.apache.spark.streaming.StreamingContext;
+import org.apache.hadoop.io._;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+val ssc = new StreamingContext(sc, Seconds(30));
+
+val inputDirectory = "spark/sparkstreaming/newstream";
+
+val lines = ssc.fileStream[LongWritable, Text, TextInputFormat](inputDirectory);
+
+
+lines.foreachRDD{rdd=>
+var nrdd = rdd.map(x=>x._2.toString);
+println("------------------------------------------- NEW BATCH --------------------------------------");
+println("------------------------------------------- CIUNT --------------------------------------");
+println(nrdd.count);
+println("------------------------------------------- END COUNT--------------------------------------");
+println("------------------------------------------- BATCH Content--------------------------------------");
+nrdd.collect.foreach(println);
+println("------------------------------------------- END BATCH Content--------------------------------------");
+};
+
+ssc.start();
+ssc.awaitTermination();
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--word count dstream
+
+import org.apache.spark.streaming.Seconds;
+import org.apache.spark.streaming.StreamingContext._;
+import org.apache.spark.streaming.StreamingContext;
+import org.apache.hadoop.io._;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+val ssc = new StreamingContext(sc, Seconds(30));
+
+val inputDirectory = "spark/sparkstreaming/newstream";
+
+val lines = ssc.fileStream[LongWritable, Text, TextInputFormat](inputDirectory);
+
+
+lines.foreachRDD{rdd=>
+var nrdd = rdd.map(x=>x._2.toString);
+println("------------------------------------------- NEW BATCH --------------------------------------");
+println("------------------------------------------- CIUNT --------------------------------------");
+println(nrdd.count);
+println("------------------------------------------- END COUNT--------------------------------------");
+println("------------------------------------------- BATCH Content--------------------------------------");
+nrdd.flatMap(x=>x.split(" ")).countByValue.foreach(println);
+println("------------------------------------------- END BATCH Content--------------------------------------");
+};
+
+ssc.start();
+ssc.awaitTermination();
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--window
+import org.apache.spark.streaming.Seconds;
+import org.apache.spark.streaming.StreamingContext._;
+import org.apache.spark.streaming.StreamingContext;
+import org.apache.hadoop.io._;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+val ssc = new StreamingContext(sc, Seconds(30));
+
+val inputDirectory = "spark/sparkstreaming/newstream";
+
+val lines = ssc.fileStream[LongWritable, Text, TextInputFormat](inputDirectory);
+var wlines = lines.window(Seconds(60),Seconds(30));
+
+wlines.foreachRDD{rdd=>
+var nrdd = rdd.map(x=>x._2.toString);
+println("------------------------------------------- NEW BATCH --------------------------------------");
+spark.sql("select current_timestamp").show(false)
+println("------------------------------------------- COUNT --------------------------------------");
+println(nrdd.count);
+println("------------------------------------------- END COUNT--------------------------------------");
+println("------------------------------------------- BATCH Content--------------------------------------");
+nrdd.flatMap(x=>x.split(" ")).countByValue.foreach(println);
+println("------------------------------------------- END BATCH Content--------------------------------------");
+};
+
+ssc.start();
+ssc.awaitTermination();
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+--dataframe
+import org.apache.spark.streaming.Seconds;
+import org.apache.spark.streaming.StreamingContext._;
+import org.apache.spark.streaming.StreamingContext;
+import org.apache.hadoop.io._;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+val ssc = new StreamingContext(sc, Seconds(30));
+
+val inputDirectory = "spark/sparkstreaming/newstream";
+
+val lines = ssc.fileStream[LongWritable, Text, TextInputFormat](inputDirectory);
+
+lines.foreachRDD{rdd=>
+var ndf = rdd.map(x=>x._2.toString).toDF("value");
+println("------------------------------------------- NEW BATCH --------------------------------------");
+spark.sql("select current_timestamp").show(false)
+println("------------------------------------------- COUNT --------------------------------------");
+println(ndf.count);
+println("------------------------------------------- END COUNT--------------------------------------");
+println("------------------------------------------- BATCH Content--------------------------------------");
+ndf.flatMap(x=>x(0).toString.split(" ")).groupBy("value").agg(count("value")).show;
+println("------------------------------------------- END BATCH Content--------------------------------------");
+};
+ssc.start();
+ssc.awaitTermination();
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+--dataframe with spark sql table
+import org.apache.spark.streaming.Seconds;
+import org.apache.spark.streaming.StreamingContext._;
+import org.apache.spark.streaming.StreamingContext;
+import org.apache.hadoop.io._;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+val ssc = new StreamingContext(sc, Seconds(30));
+
+val inputDirectory = "spark/sparkstreaming/newstream";
+
+val lines = ssc.fileStream[LongWritable, Text, TextInputFormat](inputDirectory);
+
+lines.foreachRDD{rdd=>
+var ndf = rdd.map(x=>x._2.toString).toDF("value");
+println("------------------------------------------- NEW BATCH --------------------------------------");
+println("------------------------------------------- COUNT --------------------------------------");
+println(ndf.count);
+println("------------------------------------------- END COUNT--------------------------------------");
+println("------------------------------------------- BATCH Content--------------------------------------");
+ndf.flatMap(x=>x(0).toString.split(" ")).createOrReplaceTempView("mytable");
+spark.sql("select value,count(*) from mytable group by value").show;
+println("------------------------------------------- END BATCH Content--------------------------------------");
+};
+ssc.start();
+ssc.awaitTermination();
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//with furture
+
+import org.apache.spark.streaming.Seconds;
+import org.apache.spark.streaming.StreamingContext._;
+import org.apache.spark.streaming.StreamingContext;
+import org.apache.hadoop.io._;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+
+val ssc = new StreamingContext(sc, Seconds(30));
+
+val inputDirectory = "spark/sparkstreamin";
+
+val lines = ssc.fileStream[LongWritable, Text, TextInputFormat](inputDirectory);
+
+lines.foreachRDD{
+
+rdd =>
+println("")
+println("Strat of new RDD")
+var myrdd = rdd.map(x=>x._2.toString)
+println("Count of New RDD")
+
+val f = Future {
+println(myrdd.count)
+  }
+println("Content of New RDD")
+myrdd.collect.foreach(println)
+println("Wordcount")
+myrdd.flatMap(x=>x.split(" ")).countByValue.foreach(println)
+println("End of Rdd")
+}
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ssc.start()
+ssc.awaitTermination()
+labuser
+edureka
+

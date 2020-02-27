@@ -1,0 +1,131 @@
+https://spark.apache.org/docs/1.6.1/api/java/org/apache/spark/sql/DataFrame.html
+https://jaceklaskowski.gitbooks.io/mastering-spark-sql/spark-sql-functions.html
+http://spark.apache.org/docs/1.5.1/api/scala/index.html#org.apache.spark.sql.functions$
+http://spark.apache.org/docs/1.5.1/api/scala/index.html#org.apache.spark.sql.Column
+https://databricks.com/blog/2015/07/15/introducing-window-functions-in-spark-sql.html
+
+
+var mydf = spark.read.format("csv").load("data/people.txt")
+mydf = mydf.toDF("name","sname","salary","dept")
+mydf = mydf.toDF(colnames:_*)
+
+mydf.select(mydf("name")).show
+mydf.select(col("name")).show
+mydf.select("name").show
+mydf.select($"name").show
+mydf.select(mydf("salary")+1000).show
+
+mydf.filter(col("salary") > 5000).show
+mydf.filter(col("salary") > 5000 && col("salary") < 9000).show
+mydf.filter(length(col("name"))>4).show
+
+you can also put the filter in string format what you write in sql as follows.
+mydf.filter("salary > 5000").show
+mydf.filter("salary > 5000 and salary < 9000").show
+mydf.filter("length(name)>4").show
+
+//where
+//where is as good as filter, simply replace filter with where and it will work.
+
+mydf.sort(col("salary")).show
+mydf.sort(col("salary").desc).show
+mydf.sort(col("name"),col("salary").desc).show
+
+orderBy and sort are same
+
+mydf.orderBy(col("salary").desc).show
+mydf.orderBy(col("name"),col("salary").desc).show
+
+mydf.select(expr("name"),expr("salary + 1500"),expr("name like 'hit%'")).show
+in expr, you can put any expression in double quotes and refer any column inside, 
+quite useful.
+
+var mydf = spark.read.format("csv").load("data/people.txt")
+mydf = mydf.select(expr("_c0 as name"),expr("_c1 as sname"),expr("_c2 as salary"),expr("_c3 as dept"))
+
+
+var mydf = spark.read.format("csv").load("data/people.txt")
+import org.apache.spark.sql.types.IntegerType
+mydf = mydf.select(expr("_c0 as name"),expr("_c1 as sname"),expr("_c2  as salary").
+cast(IntegerType),expr("_c3 as dept"))
+
+//group by
+//public GroupedData groupBy(scala.collection.Seq<Column> cols)
+mydf.groupBy(col("dept")).sum("salary").show
+mydf.groupBy(col("dept")).agg(sum("salary"),avg("salary"),min("salary"),max("salary"),count("salary"),countDistinct("name")).show
+mydf.groupBy(col("dept")).agg(Map("salary"->"sum","name"->"count")).show
+mydf.groupBy(col("dept"),col("salary")).count.show
+
+
+
+var ia = Array("Dinesh lives in mumbai","Himanshu is expert of big data")
+var testdf = sc.parallelize(ia).toDF("inputtext")
+testdf.explode("inputtext","out"){x:String=>x.split(" ")}.show
+//All columns of the input row are implicitly joined with each value that is output 
+//by the function.
+//Returns a new DataFrame where a single column has been expanded to zero or more 
+//rows by the provided function. 
+
+var newJson = Array("""{"Name" : "Srikant", "Age" : 20, "Colleagues":["Anant","Prabhakaran"], "Address":{"plotno":"D2","city":"Gurgaon"}}""",
+    """{"Name" : "Sakshi", "Age" : 19, "Colleagues":["Ramya","Jiten"], "Address":{"plotno":"56","Builing":"Souvenir","city":"Navi Mumbai"}}""")
+var jsondf = sc.parallelize(newJson).toDF("jsonText")
+
+//withColumn
+public DataFrame withColumn(java.lang.String colName,
+                   Column col)
+jsondf.withColumn("name",get_json_object(col("jsonText"),"$.Name")).show
+
+jsondf.withColumn("name",get_json_object(col("jsonText"),"$.Name")).withColumn("building",get_json_object(col("jsonText"),"$.Address.Builing")).select(col("name"),when(col("building").isNull,lit("na")).otherwise(col("building")).as("building")).show
+
+//withColumnRenamed
+//public DataFrame withColumnRenamed(java.lang.String existingName,
+//                          java.lang.String newName)
+jsondf = jsondf.withColumn("name",get_json_object(col("jsonText"),"$.Name")).
+withColumnRenamed("name","newname")
+jsondf.show
+
+
+//limit
+//Returns a new DataFrame by taking the first n rows. The difference between this 
+function and head is that head returns an array while limit returns a new DataFrame.
+mydf.limit(2).show
+mydf.head(2)
+
+//unionAll
+//public DataFrame unionAll(DataFrame other)
+//Returns a new DataFrame containing union of rows in this frame and another frame. This is equivalent to UNION ALL in SQL.
+mydf.unionAll(mydf).show
+
+//intersect
+//public DataFrame intersect(DataFrame other)
+mydf.intersect(mydf).show
+
+//except
+mydf.except(mydf).show
+
+
+
+//randomSplit
+//public DataFrame[] randomSplit(double[] weights)
+//Randomly splits this DataFrame with the provided weights.
+var a = mydf.randomSplit(Array(.6,.4))
+a(1).show
+a(0).show
+
+//dropDuplicates
+//public DataFrame dropDuplicates()
+mydf.dropDuplicates.show
+
+mydf.describe().show
+mydf.describe("salary").show
+
+
+
+def withCat(name: String)(df: org.apache.spark.sql.DataFrame): org.apache.spark.sql.DataFrame = {
+df.withColumn("rank", lit(name))
+}
+
+mydf.transform(withCat("emp")).show
+
+
+mydf.inputFiles
