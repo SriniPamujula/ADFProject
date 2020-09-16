@@ -1,0 +1,11 @@
+﻿b_personal,s_displayname ,n_days,n_chgdays,n_unchargedays,n_encounters_hold,n_encounters_hold1,n_encounters_hold2,n_encounters_hold3,n_encounters_hold4,n_encounters_hold5,n_encounters_hold6,n_encounters_hold7,n_encounters_hold8,n_encounters_hold9,n_encounters_holdfornursebycoder,n_encounters_holdforcoderbynurse,n_encounters_hold12,n_encounters_hold13,n_encounters_hold14,n_encounters_hold15,n_encounters_hold16,n_encounters_hold17,n_encounters_hold18,n_encounters_hold19,n_encounters_hold20,n_encounters_hold21,n_encounters_hold22,n_encounters_hold23,n_encounters_hold24,n_encounters_hold25,n_encounters_hold26,n_encounters_hold27,n_encounters_hold28,n_encounters_hold29,n_encounters_exportable,n_encounters_exported,n_encounters_total,totalrlis,n_admission_charged,n_admission_uncharged,n_non_nce_rlitems
+0,TestGroup1,100,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+0,TestGroup2,100,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,1,2,2,2,2,2,2,2,2,2,2,2
+0,TestGroup3,100,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,1,3,3,3,3,3,3,3,3,3,3,3
+0,TestGroup4,100,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,1,4,1,4,4,4,4,4,4,4,4,4,4,4
+0,TestGroup5,100,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,1,5,1,5,5,5,5,5,5,5,5,5,5,5
+0,TestGroup6,100,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,1,6,1,6,6,6,6,6,6,6,6,6,6,6
+0,TestGroup7,100,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,1,7,1,7,7,7,7,7,7,7,7,7,7,7
+0,TestGroup8,100,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,8,1,8,1,8,8,8,8,8,8,8,8,8,8,8
+0,TestGroup9,100,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,1,9,1,9,9,9,9,9,9,9,9,9,9,9
+0,TestGroup10,100,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,10,1,10,1,10,10,10,10,10,10,10,10,10,10,10
