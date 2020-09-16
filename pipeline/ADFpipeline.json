@@ -1,0 +1,100 @@
+{
+	"name": "ADFpipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "filepath",
+								"value": "$$FILEPATH"
+							}
+						],
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"modifiedDatetimeStart": "2020-09-15T00:00:00Z",
+							"wildcardFolderPath": "incoming",
+							"wildcardFileName": "Rounding_List*"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlMISink",
+						"sqlWriterStoredProcedureName": "[dbo].[usp_ins_myTable]",
+						"sqlWriterTableType": "typ_multiFile",
+						"storedProcedureTableTypeParameterName": "typ",
+						"storedProcedureParameters": {
+							"fileName": {
+								"type": "String",
+								"value": {
+									"value": "@item().name",
+									"type": "Expression"
+								}
+							}
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "s_displayname ",
+									"type": "String"
+								},
+								"sink": {
+									"name": "MedAptusGroupName"
+								}
+							},
+							{
+								"source": {
+									"name": "n_days",
+									"type": "Int16"
+								},
+								"sink": {
+									"name": "RoundingListTotal"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "inputdata",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "AzureSqlOutput",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2020-09-16T22:02:48Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

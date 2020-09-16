@@ -1,0 +1,60 @@
+{
+	"name": "DestinationDataset_tb4",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Date",
+				"type": "date",
+				"precision": 10,
+				"scale": 0
+			},
+			{
+				"name": "MedAptusApplicationCode",
+				"type": "varchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "MedAptusGroupName",
+				"type": "varchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "RoundingListTotal",
+				"type": "int",
+				"precision": 10,
+				"scale": 0
+			},
+			{
+				"name": "SourceFilename",
+				"type": "varchar",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "InsertDateTime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ModifiedDateTime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "MedAptus_RoundingList"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

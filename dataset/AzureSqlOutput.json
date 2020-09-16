@@ -1,0 +1,51 @@
+{
+	"name": "AzureSqlOutput",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlMI1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlMITable",
+		"schema": [
+			{
+				"name": "Date",
+				"type": "date"
+			},
+			{
+				"name": "MedAptusApplicationCode",
+				"type": "varchar"
+			},
+			{
+				"name": "MedAptusGroupName",
+				"type": "varchar"
+			},
+			{
+				"name": "RoundingListTotal",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "SourceFilename",
+				"type": "varchar"
+			},
+			{
+				"name": "InsertDateTime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "ModifiedDateTime",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "MedAptus_RoundingList"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
