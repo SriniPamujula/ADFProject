@@ -1,0 +1,371 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name"
+		},
+		"AzureBlobStorage1": {
+			"type": "string"
+		},
+		"AzureSqlMI1": {
+			"type": "string"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/ADFpipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"additionalColumns": [
+									{
+										"name": "filepath",
+										"value": "$$FILEPATH"
+									}
+								],
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"modifiedDatetimeStart": "2020-09-15T00:00:00.000Z",
+									"wildcardFolderPath": "incoming",
+									"wildcardFileName": "Rounding_List*"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlMISink",
+								"sqlWriterStoredProcedureName": "[[dbo].[usp_ins_myTable]",
+								"sqlWriterTableType": "typ_multiFile",
+								"storedProcedureTableTypeParameterName": "typ",
+								"storedProcedureParameters": {
+									"fileName": {
+										"type": "String",
+										"value": "@item().name"
+									}
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "s_displayname ",
+											"type": "String"
+										},
+										"sink": {
+											"name": "MedAptusGroupName"
+										}
+									},
+									{
+										"source": {
+											"name": "n_days",
+											"type": "Int16"
+										},
+										"sink": {
+											"name": "RoundingListTotal"
+										}
+									}
+								],
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "inputdata",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSqlOutput",
+								"type": "DatasetReference"
+							}
+						]
+					}
+				],
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/inputdata')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlOutput')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/inputdata')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "[parameters('AzureBlobStorage1')]",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "Rounding_List_LAKETAHOE_20200818073151.csv",
+						"folderPath": "incoming",
+						"container": "projectcontainer"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "b_personal",
+						"type": "String"
+					},
+					{
+						"name": "s_displayname ",
+						"type": "String"
+					},
+					{
+						"name": "n_days",
+						"type": "String"
+					},
+					{
+						"name": "n_chgdays",
+						"type": "String"
+					},
+					{
+						"name": "n_unchargedays",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold1",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold2",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold3",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold4",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold5",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold6",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold7",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold8",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold9",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_holdfornursebycoder",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_holdforcoderbynurse",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold12",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold13",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold14",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold15",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold16",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold17",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold18",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold19",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold20",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold21",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold22",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold23",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold24",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold25",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold26",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold27",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold28",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_hold29",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_exportable",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_exported",
+						"type": "String"
+					},
+					{
+						"name": "n_encounters_total",
+						"type": "String"
+					},
+					{
+						"name": "totalrlis",
+						"type": "String"
+					},
+					{
+						"name": "n_admission_charged",
+						"type": "String"
+					},
+					{
+						"name": "n_admission_uncharged",
+						"type": "String"
+					},
+					{
+						"name": "n_non_nce_rlitems",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlOutput')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "[parameters('AzureSqlMI1')]",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlMITable",
+				"schema": [
+					{
+						"name": "Date",
+						"type": "date"
+					},
+					{
+						"name": "MedAptusApplicationCode",
+						"type": "varchar"
+					},
+					{
+						"name": "MedAptusGroupName",
+						"type": "varchar"
+					},
+					{
+						"name": "RoundingListTotal",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SourceFilename",
+						"type": "varchar"
+					},
+					{
+						"name": "InsertDateTime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ModifiedDateTime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "MedAptus_RoundingList"
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
